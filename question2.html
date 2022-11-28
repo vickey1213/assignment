@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      body {
+        padding: 0px;
+      }
+      .head {
+        height: 200px;
+        width: 100%;
+        border: 30px;
+        background-color: blue;
+        text-align: center;
+        color: aliceblue;
+        padding: 50px;
+      }
+
+      .searchBar {
+        width: 60%;
+        height: 35px;
+        border-radius: 30px;
+        text-align: center;
+      }
+      .theader {
+        background-color: black;
+        color: white;
+
+        border-radius: 20px;
+      }
+      .white {
+        background-color: white;
+        color: rgb(119, 117, 117);
+      }
+      .black {
+        background-color: rgb(228, 225, 225);
+        color: rgb(119, 117, 117);
+      }
+      .dtable {
+        text-align: center;
+        margin: 20px auto;
+        padding: 5px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+      }
+      td {
+        padding: 5px;
+      }
+      .one {
+        background-color: black;
+        border: 2px solid red;
+        border-radius: 20px;
+      }
+      th {
+        padding: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="head">
+      <h1>California Cafe Directory</h1>
+      <input
+        type="text"
+        placeholder="Search Your Favorite Cafe"
+        class="searchBar"
+        oninput="searchFilter()"
+      />
+    </div>
+    <table class="dtable">
+      <thead class="theader">
+        <tr class="one">
+          <th>S No</th>
+          <th>Cafe Name</th>
+          <th>Address</th>
+          <th>Postal Code</th>
+          <th>Lat</th>
+          <th>Long</th>
+        </tr>
+      </thead>
+      <tbody id="tabelBody"></tbody>
+    </table>
+
+    <script>
+      let nameArr;
+      let placeArr;
+
+      const data = async () => {
+        await getData(
+          `https://raw.githubusercontent.com/debojyoti/places-fake-rest-api/master/cafes.json`
+        );
+        async function getData(dataUrl) {
+          const response = await fetch(dataUrl);
+          const data = await response.json();
+          nameArr = await data.cafes;
+        }
+        await getPlace(
+          `https://raw.githubusercontent.com/debojyoti/places-fake-rest-api/master/places.json`
+        );
+        async function getPlace(dataUrl) {
+          const response = await fetch(dataUrl);
+          const data = await response.json();
+          placeArr = await data.places;
+        }
+        await displayData(nameArr, placeArr);
+      };
+      data();
+
+      function displayData(nameArr, placeArr) {
+        let allData = "";
+        let l =
+          nameArr.length > placeArr.length ? placeArr.length : nameArr.length;
+        let flag = true;
+        for (let i = 0; i < l; i++) {
+          allData += `
+                  <tr class="${flag ? "white" : "black"}">
+                    <td>${i + 1}</td>
+                    <td>${nameArr[i].name}</td>
+                    <td>${placeArr[i].locality}</td>
+                    <td>${placeArr[i].postal_code}</td>
+                    <td>${placeArr[i].lat}</td>
+                    <td>${placeArr[i].long}</td>
+                    
+                    
+                  </tr>
+        `;
+          flag = !flag;
+        }
+        document.getElementById("tabelBody").innerHTML = allData;
+      }
+
+      const searchFilter = () => {
+        let search = document.querySelector(".searchBar").value;
+        let fnameArr = nameArr.filter((item) =>
+          item.name.toLowerCase().includes(search.toLowerCase())
+        );
+        displayData(fnameArr, placeArr);
+      };
+    </script>
+  </body>
+</html>
